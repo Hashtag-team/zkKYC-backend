@@ -27,6 +27,8 @@ func NewDBStorage(db *sql.DB) Repository {
 		dbManager: NewDBManager(db),
 	}
 
+	dbs.dbManager.CreateTable(context.Background())
+
 	return &dbs
 }
 

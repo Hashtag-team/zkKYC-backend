@@ -14,7 +14,7 @@ CREATE TABLE users (
     birth_date DATE NOT NULL,
     gender VARCHAR(1) NOT NULL CHECK (gender IN ('M', 'F')),
     eth_address VARCHAR(42) NOT NULL UNIQUE,
-    did VARCHAR(255) UNIQUE CHECK (did ~ '^did:[a-zA-Z0-9]+:[a-zA-Z0-9._-]+$');
+    did VARCHAR(255) UNIQUE CHECK (did ~ '^did:[a-zA-Z0-9]+:[a-zA-Z0-9._-]+$')
 );
 CREATE UNIQUE INDEX idx_full_name ON users (full_name);
 `

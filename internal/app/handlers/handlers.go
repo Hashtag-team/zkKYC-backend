@@ -4,6 +4,7 @@ import (
 	"database/sql"
 	"encoding/json"
 	"errors"
+	"fmt"
 	"github.com/go-chi/chi/v5"
 	"github.com/jackc/pgconn"
 	"github.com/jackc/pgerrcode"
@@ -38,6 +39,7 @@ func NewShortenerHandler(c config.Config) *ZkKYCHandler {
 // API Endpoint for creating user
 func (h *ZkKYCHandler) APICreateUser(w http.ResponseWriter, r *http.Request) {
 
+	fmt.Println("[+]POST /api/user")
 	input := storage.User{}
 
 	if err := json.NewDecoder(r.Body).Decode(&input); err != nil {
@@ -81,6 +83,8 @@ func (h *ZkKYCHandler) APICreateUser(w http.ResponseWriter, r *http.Request) {
 func (h *ZkKYCHandler) APIGetExitingUser(w http.ResponseWriter, r *http.Request) {
 
 	ethAddress := chi.URLParam(r, "eth")
+
+	fmt.Printf("[+]GET /api/user/%s\n", ethAddress)
 
 	re := regexp.MustCompile(`^[a-zA-Z0-9]+$`)
 
