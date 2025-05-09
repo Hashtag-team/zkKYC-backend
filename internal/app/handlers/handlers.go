@@ -58,7 +58,7 @@ func (h *ZkKYCHandler) APICreateUser(w http.ResponseWriter, r *http.Request) {
 		if pge.Code == pgerrcode.UniqueViolation {
 			w.Header().Set("Content-Type", "application/json")
 			w.WriteHeader(http.StatusConflict)
-			u, ok := h.Repo.Get(r.Context(), did)
+			u, ok := h.Repo.Get(r.Context(), input.EthAddress)
 			if ok {
 				input = *u.(*storage.User)
 			}
