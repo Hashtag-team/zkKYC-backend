@@ -2,6 +2,7 @@ package server
 
 import (
 	"context"
+	"github.com/go-chi/cors"
 	"log"
 	"net/http"
 	"os"
@@ -27,6 +28,16 @@ func NewServer(cfg config.Config) Server {
 	mh := handlers.NewMiddlewareHandler(cfg)
 
 	r := chi.NewRouter()
+
+	r.Use(cors.Handler(cors.Options{
+		AllowedOrigins:   []string{"http://localhost:3000", "http://127.0.0.1:3000"},
+		AllowedMethods:   []string{"GET", "POST", "PUT", "DELETE", "OPTIONS"},
+		AllowedHeaders:   []string{"Accept", "Authorization", "Content-Type", "X-CSRF-Token"},
+		ExposedHeaders:   []string{"Link"},
+		AllowCredentials: true,
+		MaxAge:           300,
+	}))
+
 	r.Use(mh.GzipHandle)
 	r.Use(mh.UnpackHandle)
 
