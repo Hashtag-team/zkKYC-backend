@@ -30,7 +30,11 @@ func NewServer(cfg config.Config) Server {
 	r := chi.NewRouter()
 
 	r.Use(cors.Handler(cors.Options{
-		AllowedOrigins:   []string{"http://localhost:3000", "http://frontend:3000"},
+		AllowedOrigins: []string{
+			"http://localhost:3000",
+			"http://frontend:3000",
+			"https://dici24.ru/",
+		},
 		AllowedMethods:   []string{"GET", "POST", "PUT", "DELETE", "OPTIONS"},
 		AllowedHeaders:   []string{"Accept", "Authorization", "Content-Type", "X-CSRF-Token"},
 		ExposedHeaders:   []string{"Link"},
