@@ -23,15 +23,25 @@ type Server struct {
 // Create new server
 func NewServer(cfg config.Config) Server {
 
-	h := handlers.NewShortenerHandler(cfg)
+	h := handlers.NewZkKYCHandler(cfg)
+	mh := handlers.NewMiddlewareHandler(cfg)
 
 	r := chi.NewRouter()
-	r.Use(handlers.GzipHandle)
-	r.Use(handlers.UnpackHandle)
+	r.Use(mh.GzipHandle)
+	r.Use(mh.UnpackHandle)
 
-	r.Route("/", func(r chi.Router) {
-		r.Post("/api/user", h.APICreateUser)
-		r.Get("/api/user/{eth}", h.APIGetExitingUser)
+	r.Route("/api", func(r chi.Router) {
+
+		r.Post("/user", h.APICreateUser)
+		r.Get("/user/{eth}", h.APIGetExitingUser)
+
+		r.Post("/regulator/login", h.LoginHandler)
+
+		r.Group(func(r chi.Router) {
+
+			r.Use(mh.JwtAuthMiddleware)
+			r.Get("/regulator/user/{eth}", h.APIGetExitingUserForRegulator)
+		})
 	})
 
 	s := Server{Server: &http.Server{}, sh: h}

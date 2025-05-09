@@ -6,15 +6,23 @@ import (
 	"errors"
 	"fmt"
 	"github.com/go-chi/chi/v5"
+	"github.com/golang-jwt/jwt/v5"
 	"github.com/jackc/pgconn"
 	"github.com/jackc/pgerrcode"
 	"net/http"
 	"regexp"
+	"time"
 	"zkKYC-backend/internal/app/config"
 	"zkKYC-backend/internal/app/db"
 	"zkKYC-backend/internal/app/helpers"
 	"zkKYC-backend/internal/app/storage"
 )
+
+// CustomClaims
+type CustomClaims struct {
+	UserID string `json:"user_id"`
+	jwt.RegisteredClaims
+}
 
 type ZkKYCHandler struct {
 	Repo storage.Repository
@@ -23,7 +31,7 @@ type ZkKYCHandler struct {
 }
 
 // Create new instance of ZkKYCHandler
-func NewShortenerHandler(c config.Config) *ZkKYCHandler {
+func NewZkKYCHandler(c config.Config) *ZkKYCHandler {
 	h := &ZkKYCHandler{
 		cfg: c,
 		DB:  db.NewDBConnection(c),
@@ -108,6 +116,73 @@ func (h *ZkKYCHandler) APIGetExitingUser(w http.ResponseWriter, r *http.Request)
 		encoder.SetEscapeHTML(false)
 
 		encoder.Encode(result)
+
+		return
+	}
+
+	w.WriteHeader(http.StatusNotFound)
+
+	return
+
+}
+
+// Login handler for authentication
+func (h *ZkKYCHandler) LoginHandler(w http.ResponseWriter, r *http.Request) {
+
+	fmt.Println("[+]POST /api/regulator/login")
+
+	username := r.FormValue("username")
+	password := r.FormValue("password")
+
+	if username != "admin" || password != "admin" {
+		http.Error(w, "Invalid credentials", http.StatusUnauthorized)
+		return
+	}
+
+	claims := CustomClaims{
+		UserID: "1",
+		RegisteredClaims: jwt.RegisteredClaims{
+			ExpiresAt: jwt.NewNumericDate(time.Now().Add(24 * time.Hour)),
+		},
+	}
+
+	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
+	tokenString, err := token.SignedString([]byte(h.cfg.JWTSecret))
+	if err != nil {
+		http.Error(w, "Failed to generate token", http.StatusInternalServerError)
+		return
+	}
+
+	w.Write([]byte(tokenString))
+}
+
+// API Endpoint for getting exiting user for regulator
+func (h *ZkKYCHandler) APIGetExitingUserForRegulator(w http.ResponseWriter, r *http.Request) {
+
+	val := r.Context().Value("user_id")
+	fmt.Println(val)
+
+	ethAddress := chi.URLParam(r, "eth")
+
+	fmt.Printf("[+]GET /api/regulator/user/%s\n", ethAddress)
+
+	re := regexp.MustCompile(`^[a-zA-Z0-9]+$`)
+
+	if !re.MatchString(ethAddress) {
+		w.WriteHeader(http.StatusBadRequest)
+		return
+	}
+
+	u, ok := h.Repo.Get(r.Context(), ethAddress)
+
+	if ok {
+
+		u := u.(*storage.User)
+
+		encoder := json.NewEncoder(w)
+		encoder.SetEscapeHTML(false)
+
+		encoder.Encode(u)
 
 		return
 	}
