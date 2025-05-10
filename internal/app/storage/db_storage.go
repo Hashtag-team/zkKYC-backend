@@ -38,8 +38,8 @@ func (s *DBStorage) Add(ctx context.Context, user *User) error {
 }
 
 // Get value
-func (s *DBStorage) Get(ctx context.Context, did string) (interface{}, bool) {
-	v, err := s.dbManager.GetUserByAddress(ctx, did)
+func (s *DBStorage) Get(ctx context.Context, address string) (interface{}, bool) {
+	v, err := s.dbManager.GetUserByAddress(ctx, address)
 	if err != nil {
 		return "", false
 	}

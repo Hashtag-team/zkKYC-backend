@@ -58,7 +58,7 @@ func (m *DBManager) CreateUser(ctx context.Context, user *User) error {
 	).Scan(&user.ID)
 }
 
-// GetUserByAddress returns user with specific did
+// GetUserByAddress returns user with specific address
 func (m *DBManager) GetUserByAddress(ctx context.Context, eth string) (*User, error) {
 
 	var user User

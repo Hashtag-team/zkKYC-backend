@@ -87,8 +87,8 @@ func (h *ZkKYCHandler) APICreateUser(w http.ResponseWriter, r *http.Request) {
 	encoder.Encode(result)
 }
 
-// API Endpoint for getting exiting user
-func (h *ZkKYCHandler) APIGetExitingUser(w http.ResponseWriter, r *http.Request) {
+// API Endpoint for getting user
+func (h *ZkKYCHandler) APIGetUser(w http.ResponseWriter, r *http.Request) {
 
 	ethAddress := chi.URLParam(r, "eth")
 
@@ -156,11 +156,12 @@ func (h *ZkKYCHandler) LoginHandler(w http.ResponseWriter, r *http.Request) {
 	w.Write([]byte(tokenString))
 }
 
-// API Endpoint for getting exiting user for regulator
-func (h *ZkKYCHandler) APIGetExitingUserForRegulator(w http.ResponseWriter, r *http.Request) {
+// API Endpoint for getting user for regulator
+func (h *ZkKYCHandler) APIGetUserForRegulator(w http.ResponseWriter, r *http.Request) {
 
-	val := r.Context().Value("user_id")
-	fmt.Println(val)
+	// TODO: log regulator request data
+	//val := r.Context().Value("user_id")
+	// save to db
 
 	ethAddress := chi.URLParam(r, "eth")
 

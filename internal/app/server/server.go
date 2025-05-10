@@ -48,14 +48,15 @@ func NewServer(cfg config.Config) Server {
 	r.Route("/api", func(r chi.Router) {
 
 		r.Post("/user", h.APICreateUser)
-		r.Get("/user/{eth}", h.APIGetExitingUser)
+		r.Get("/user/{eth}", h.APIGetUser)
 
 		r.Post("/regulator/login", h.LoginHandler)
 
 		r.Group(func(r chi.Router) {
 
-			r.Use(mh.JwtAuthMiddleware)
-			r.Get("/regulator/user/{eth}", h.APIGetExitingUserForRegulator)
+			r.Use(mh.JwtAuthHandler)
+			r.Get("/regulator/user/{eth}", h.APIGetUserForRegulator)
+			
 		})
 	})
 

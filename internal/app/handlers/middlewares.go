@@ -102,7 +102,7 @@ func (h *MiddlewareHandler) GzipHandle(next http.Handler) http.Handler {
 }
 
 // Middleware for jwt
-func (h *MiddlewareHandler) JwtAuthMiddleware(next http.Handler) http.Handler {
+func (h *MiddlewareHandler) JwtAuthHandler(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		authHeader := r.Header.Get("Authorization")
 		if authHeader == "" {
